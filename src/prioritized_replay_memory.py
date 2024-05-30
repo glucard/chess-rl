@@ -1,4 +1,4 @@
-import torch
+import torch, operator
 import numpy as np
 from collections import deque
 
@@ -22,7 +22,15 @@ class PrioritizedReplayMemory:
     def push(self, state, action, reward, next_state, next_state_valid_actions):
         max_prio  = self.max_priority() if len(self) > 0 else 1.0
         experience = (state, action, reward, next_state, next_state_valid_actions, max_prio)
+        if len(self) >=  self.capacity:
+            self.remove_least_priority()
         self.memory.append(experience)
+
+    def remove_least_priority(self):
+        states, actions, rewards, next_states, next_state_valid_actions, priorities = *zip(*self.memory),
+        
+        min_index, min_value = min(enumerate(priorities), key=operator.itemgetter(1))
+        del self.memory[min_index]
     
     def update_priorities(self, indices, new_priorities):
         states, actions, rewards, next_states, next_state_valid_actions, priorities = *zip(*self.memory), # let the ',' to not give syntax error
