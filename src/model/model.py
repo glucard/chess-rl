@@ -8,8 +8,24 @@ def phi(observation, device):
     x = torch.tensor(observation, dtype=torch.float32, device=device)
     return x
 
+def valid_move(board: chess.Board, move: chess.Move) -> bool:
+    # check legal
+    if not move in board.legal_moves:
+        return False
+    
+    # check repetition
+    board.push(move)
+    if board.is_repetition(count=4):
+        board.pop()
+        return False
+    board.pop()
+
+    # valid move
+    return True
+
 def valid_actions(board: chess.Board, all_moves: list):
-    return [i for i, move in enumerate(all_moves) if move in board.legal_moves]
+    legal_moves = [i for i, move in enumerate(all_moves) if valid_move(board, move)]
+    return legal_moves
 
 def mask_invalid_actions(q_values, valid_actions):
     mask = torch.full_like(q_values, float('-inf'))
