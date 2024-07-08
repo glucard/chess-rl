@@ -14,11 +14,15 @@ def valid_move(board: chess.Board, move: chess.Move) -> bool:
         return False
     
     # check repetition
-    board.push(move)
+    """board.push(move)
     if board.is_repetition(count=4):
         board.pop()
         return False
-    board.pop()
+    board.pop()"""
+
+    # check move n repetition on last m moves
+    if board.move_stack[-5:].count(move) > 1:
+        return False
 
     # valid move
     return True
@@ -39,16 +43,27 @@ class DQN(nn.Module):
         n = action_space
         self.linear_0 = nn.Linear(input_size, n)
         self.relu_0 = nn.ReLU()
+        self.dropout_0 = nn.Dropout(0.1)
 
         self.linear_1 = nn.Linear(n, n)
         self.relu_1 = nn.ReLU()
-        
+        self.dropout_1 = nn.Dropout(0.1)
+        """
+        self.linear_2 = nn.Linear(n, n)
+        self.relu_2 = nn.ReLU()
+        self.dropout_2 = nn.Dropout(0.1)
+        """
         self.v = nn.Linear(n, 1)
         self.a = nn.Linear(n, action_space)
         
     def forward(self, x):
         x = self.linear_0(x)
         x = self.relu_0(x)
+        x = self.dropout_0(x)
+
+        x = self.linear_1(x)
+        x = self.relu_1(x)
+        x = self.dropout_1(x)
 
         a = self.a(x)
         v = self.v(x)
@@ -56,6 +71,8 @@ class DQN(nn.Module):
         return q
     
     def q_train(self, target_net, optimizer, loss_fn, sample, gamma, replay_memory, device):
+        optimizer.zero_grad()
+        self.train()
         # states, actions, rewards, next_states, priorities, indices, weights = *zip(*sample), # let the ',' to not give syntax error
         states, actions, rewards, next_states, next_state_valid_actions, priorities, indices, weights = sample # let the ',' to not give syntax error
         BATCH_SIZE = len(states) # - 1
@@ -76,8 +93,6 @@ class DQN(nn.Module):
             
         # Set yj for terminal and non-terminal phij+1
         expected_next_action_values = rewards + gamma * next_state_values
-
-        optimizer.zero_grad()
         qvalues = self(states)
         qvalues = qvalues.gather(1, actions)
 
