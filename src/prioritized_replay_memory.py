@@ -53,7 +53,7 @@ class PrioritizedReplayMemory:
         
         weights = (m * probs[indices] ** (-beta))
         weights /= weights.max()
-        weights = torch.tensor(weights, dtype=torch.float32, device=self.torch_device)
+        weights = torch.tensor(weights, dtype=torch.float32)
 
         states, actions, rewards, next_states, next_state_valid_actions, priorities = *zip(*samples),
         return states, actions, rewards, next_states, next_state_valid_actions, priorities, indices, weights
