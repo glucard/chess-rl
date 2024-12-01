@@ -60,5 +60,5 @@ if __name__=="__main__":
     except KeyboardInterrupt:
         pass
     
-    os.makedirs("models")
-    model.save("models/ppo_mask")
+    os.makedirs("data")
+    model.save("data/ppo_mask")
