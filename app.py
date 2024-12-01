@@ -1,3 +1,5 @@
+import os
+
 from chessrl.cnnextractor import CustomCNNExtractor
 from chess_gymnasium_env.envs.chess import ChessEnv
 import gymnasium as gym
@@ -58,4 +60,5 @@ if __name__=="__main__":
     except KeyboardInterrupt:
         pass
     
-    model.save("ppo_mask")
+    os.makedirs("models")
+    model.save("models/ppo_mask")
