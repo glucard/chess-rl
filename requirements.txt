@@ -1,0 +1,4 @@
+git+https://github.com/glucard/chess-gymnasium-env
+stable-baselines3
+sb3-contrib
+tensorboard
