@@ -28,7 +28,7 @@ if __name__=="__main__":
     policy_kwargs = dict(
         features_extractor_class=CustomCNNExtractor,
         features_extractor_kwargs=dict(features_dim=4096),
-        net_arch=[dict(pi=[4096, 4096], vf=[4096, 4096])]  # Proper syntax
+        net_arch=dict(pi=[4096, 4096], vf=[4096, 4096])  # Proper syntax
     )
     # Create a directory for TensorBoard logs
     log_dir = './tb_logs'
