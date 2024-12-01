@@ -15,7 +15,7 @@ if __name__=="__main__":
     
     from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv, VecNormalize
     # Number of parallel environments
-    n_envs = 12
+    n_envs = 4
 
     # Create a vectorized environment
     # env = DummyVecEnv([make_env() for _ in range(n_envs)])
@@ -27,8 +27,8 @@ if __name__=="__main__":
     # setting policy
     policy_kwargs = dict(
         features_extractor_class=CustomCNNExtractor,
-        features_extractor_kwargs=dict(features_dim=256),
-        net_arch=[dict(pi=[256, 256], vf=[512, 256])]  # Proper syntax
+        features_extractor_kwargs=dict(features_dim=4096),
+        net_arch=[dict(pi=[4096, 4096], vf=[4096, 4096])]  # Proper syntax
     )
     # Create a directory for TensorBoard logs
     log_dir = './tb_logs'
@@ -37,17 +37,15 @@ if __name__=="__main__":
         "MlpPolicy", 
         env,
         policy_kwargs=policy_kwargs,
-        gamma=0.995,              # Default gamma for PPO is 0.99, higher discount factor for long-term rewards
-        learning_rate=0.0001,
-        n_steps=2048,
-        batch_size=1024,
-        gae_lambda=0.95,
-        ent_coef=0.01,
-        clip_range=0.2,
-        max_grad_norm=0.5,
-        vf_coef=0.5,
-        n_epochs=10,  # More epochs per update
-        target_kl=0.01,  # KL divergence target for stability
+        learning_rate=5e-5,  # Lower learning rate for smoother updates
+        n_steps=4096,  # Increase timesteps per update for more stable gradients
+        batch_size=1024,  # Increase batch size for more stable training
+        gamma=0.99,  # Default gamma value for discounting
+        gae_lambda=0.95,  # Default GAE Lambda for advantage estimation
+        ent_coef=0.05,  # Entropy coefficient to encourage exploration
+        clip_range=0.05,  # Smaller clip range for conservative updates
+        target_kl=0.05,  # Allow larger policy updates before early stopping
+        vf_coef=0.3,  # Lower value loss coefficient for more focus on policy updates
         seed=32,                # Random seed for reproducibility
         verbose=1,              # Set verbosity level to 1 for progress logging
         tensorboard_log=log_dir
@@ -60,5 +58,6 @@ if __name__=="__main__":
     except KeyboardInterrupt:
         pass
     
-    os.makedirs("data")
+    if not os.path.isdir("data"):
+        os.makedirs("data")
     model.save("data/ppo_mask")
