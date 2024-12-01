@@ -15,7 +15,7 @@ if __name__=="__main__":
     
     from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv, VecNormalize
     # Number of parallel environments
-    n_envs = 4
+    n_envs = 10
 
     # Create a vectorized environment
     # env = DummyVecEnv([make_env() for _ in range(n_envs)])
@@ -27,8 +27,8 @@ if __name__=="__main__":
     # setting policy
     policy_kwargs = dict(
         features_extractor_class=CustomCNNExtractor,
-        features_extractor_kwargs=dict(features_dim=4096),
-        net_arch=dict(pi=[4096, 4096], vf=[4096, 4096])  # Proper syntax
+        features_extractor_kwargs=dict(features_dim=1024),
+        net_arch=dict(pi=[1024, 1024], vf=[1024, 1024])  # Proper syntax
     )
     # Create a directory for TensorBoard logs
     log_dir = './tb_logs'
