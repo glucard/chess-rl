@@ -24,9 +24,9 @@ class CustomCNNExtractor(BaseFeaturesExtractor):
         n_flatten = self.cnn(th.rand((12,8,8))).flatten().shape[0]
         print(n_flatten)
         self.linear = nn.Sequential(
-            nn.Linear(n_flatten, 512),
+            nn.Linear(n_flatten, features_dim),
             nn.ReLU(),
-            nn.Linear(512, features_dim),
+            nn.Linear(features_dim, features_dim),
             nn.ReLU()
         )
 
